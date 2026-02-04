@@ -1,5 +1,9 @@
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUpRight } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
@@ -23,14 +27,95 @@ const projects = [
 ];
 
 const WorkSection = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const projectsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Header slide in from left
+      gsap.fromTo(
+        headerRef.current,
+        { opacity: 0, x: -80 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: "top 85%",
+            end: "top 50%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      // Projects reveal with parallax effect
+      const projectCards = projectsRef.current?.children;
+      if (projectCards) {
+        Array.from(projectCards).forEach((card, index) => {
+          // Initial reveal animation
+          gsap.fromTo(
+            card,
+            { opacity: 0, y: 100, rotateX: 10 },
+            {
+              opacity: 1,
+              y: 0,
+              rotateX: 0,
+              duration: 1,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 90%",
+                end: "top 60%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+
+          // Subtle parallax on scroll
+          gsap.to(card, {
+            y: -20 * (index + 1),
+            ease: "none",
+            scrollTrigger: {
+              trigger: projectsRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1,
+            },
+          });
+
+          // Image zoom effect on scroll
+          const img = card.querySelector("img");
+          if (img) {
+            gsap.fromTo(
+              img,
+              { scale: 1.2 },
+              {
+                scale: 1,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: card,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: 1,
+                },
+              }
+            );
+          }
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="work" className="py-32 bg-card relative">
+    <section id="work" ref={sectionRef} className="py-32 bg-card relative overflow-hidden">
       <div className="container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+        <div
+          ref={headerRef}
           className="flex flex-col md:flex-row md:items-end md:justify-between mb-16"
         >
           <div>
@@ -47,17 +132,14 @@ const WorkSection = () => {
           >
             View all projects <ArrowUpRight className="w-4 h-4" />
           </a>
-        </motion.div>
+        </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <motion.article
+        <div ref={projectsRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {projects.map((project) => (
+            <article
               key={project.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
               className="group cursor-pointer"
+              style={{ perspective: "1000px" }}
             >
               <div className="relative overflow-hidden rounded-2xl mb-6">
                 <img
@@ -80,7 +162,7 @@ const WorkSection = () => {
               <p className="font-body text-muted-foreground">
                 {project.description}
               </p>
-            </motion.article>
+            </article>
           ))}
         </div>
       </div>
