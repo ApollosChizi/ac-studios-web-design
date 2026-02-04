@@ -1,9 +1,17 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Send, Mail, MapPin, Phone } from "lucide-react";
 import { toast } from "sonner";
 
+gsap.registerPlugin(ScrollTrigger);
+
 const ContactSection = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+  const infoRef = useRef<HTMLDivElement>(null);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,6 +19,105 @@ const ContactSection = () => {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Header animation
+      gsap.fromTo(
+        headerRef.current,
+        { opacity: 0, y: 60 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      // Form slide in from left
+      gsap.fromTo(
+        formRef.current,
+        { opacity: 0, x: -60 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: formRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      // Info slide in from right with stagger on children
+      gsap.fromTo(
+        infoRef.current,
+        { opacity: 0, x: 60 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: infoRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      // Animate contact info items
+      const infoItems = infoRef.current?.querySelectorAll(".contact-item");
+      if (infoItems) {
+        gsap.fromTo(
+          infoItems,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: infoRef.current,
+              start: "top 75%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+
+      // Form fields stagger animation
+      const formFields = formRef.current?.querySelectorAll(".form-field");
+      if (formFields) {
+        gsap.fromTo(
+          formFields,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.08,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: formRef.current,
+              start: "top 75%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,15 +139,9 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-32 bg-card relative">
+    <section id="contact" ref={sectionRef} className="py-32 bg-card relative overflow-hidden">
       <div className="container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
+        <div ref={headerRef} className="text-center mb-16">
           <span className="inline-block px-4 py-2 bg-secondary text-muted-foreground text-sm font-body rounded-full border border-border mb-6">
             Get In Touch
           </span>
@@ -50,18 +151,13 @@ const ContactSection = () => {
           <p className="font-body text-lg text-muted-foreground max-w-2xl mx-auto">
             Ready to transform your digital presence? Get in touch and let's discuss how we can bring your vision to life.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid lg:grid-cols-2 gap-16">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <div ref={formRef}>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
-                <div>
+                <div className="form-field">
                   <label htmlFor="name" className="block font-body text-sm text-muted-foreground mb-2">
                     Your Name *
                   </label>
@@ -76,7 +172,7 @@ const ContactSection = () => {
                     placeholder="John Doe"
                   />
                 </div>
-                <div>
+                <div className="form-field">
                   <label htmlFor="email" className="block font-body text-sm text-muted-foreground mb-2">
                     Email Address *
                   </label>
@@ -92,7 +188,7 @@ const ContactSection = () => {
                   />
                 </div>
               </div>
-              <div>
+              <div className="form-field">
                 <label htmlFor="company" className="block font-body text-sm text-muted-foreground mb-2">
                   Company (Optional)
                 </label>
@@ -106,7 +202,7 @@ const ContactSection = () => {
                   placeholder="Your Company"
                 />
               </div>
-              <div>
+              <div className="form-field">
                 <label htmlFor="message" className="block font-body text-sm text-muted-foreground mb-2">
                   Tell us about your project *
                 </label>
@@ -121,24 +217,20 @@ const ContactSection = () => {
                   placeholder="I'm looking for help with..."
                 />
               </div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="group flex items-center justify-center gap-2 w-full md:w-auto px-8 py-4 bg-primary text-primary-foreground font-body font-medium rounded-full hover:opacity-90 transition-all glow-effect disabled:opacity-50"
-              >
-                {isSubmitting ? "Sending..." : "Send Message"}
-                <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+              <div className="form-field">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="group flex items-center justify-center gap-2 w-full md:w-auto px-8 py-4 bg-primary text-primary-foreground font-body font-medium rounded-full hover:opacity-90 transition-all glow-effect disabled:opacity-50"
+                >
+                  {isSubmitting ? "Sending..." : "Send Message"}
+                  <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
             </form>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-8"
-          >
+          <div ref={infoRef} className="space-y-8">
             <div>
               <h3 className="font-display text-2xl font-semibold mb-6">
                 Let's talk about your next big idea
@@ -151,7 +243,7 @@ const ContactSection = () => {
             </div>
 
             <div className="space-y-6">
-              <div className="flex items-start gap-4">
+              <div className="contact-item flex items-start gap-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
                   <Mail className="w-5 h-5 text-primary" />
                 </div>
@@ -163,7 +255,7 @@ const ContactSection = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
+              <div className="contact-item flex items-start gap-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
                   <Phone className="w-5 h-5 text-primary" />
                 </div>
@@ -175,7 +267,7 @@ const ContactSection = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
+              <div className="contact-item flex items-start gap-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
                   <MapPin className="w-5 h-5 text-primary" />
                 </div>
@@ -187,7 +279,7 @@ const ContactSection = () => {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
