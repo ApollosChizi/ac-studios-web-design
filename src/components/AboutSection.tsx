@@ -1,4 +1,8 @@
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const stats = [
   { value: "50+", label: "Projects Delivered" },
@@ -7,16 +11,93 @@ const stats = [
 ];
 
 const AboutSection = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Content slide in from left
+      gsap.fromTo(
+        contentRef.current,
+        { opacity: 0, x: -80 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: contentRef.current,
+            start: "top 80%",
+            end: "top 40%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      // Image reveal from right with scale
+      gsap.fromTo(
+        imageRef.current,
+        { opacity: 0, x: 80, scale: 0.9 },
+        {
+          opacity: 1,
+          x: 0,
+          scale: 1,
+          duration: 1.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: imageRef.current,
+            start: "top 85%",
+            end: "top 45%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      // Stats counter animation with stagger
+      const statItems = statsRef.current?.children;
+      if (statItems) {
+        gsap.fromTo(
+          statItems,
+          { opacity: 0, y: 40, scale: 0.8 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "back.out(1.7)",
+            scrollTrigger: {
+              trigger: statsRef.current,
+              start: "top 90%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+
+      // Parallax effect on image
+      gsap.to(imageRef.current?.querySelector("img"), {
+        y: -40,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1.5,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="about" className="py-32 relative">
+    <section id="about" ref={sectionRef} className="py-32 relative overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <div ref={contentRef}>
             <span className="inline-block px-4 py-2 bg-secondary text-muted-foreground text-sm font-body rounded-full border border-border mb-6">
               About Us
             </span>
@@ -33,14 +114,10 @@ const AboutSection = () => {
               we take on is treated as a unique opportunity to push boundaries and exceed expectations.
             </p>
 
-            <div className="grid grid-cols-3 gap-6">
-              {stats.map((stat, index) => (
-                <motion.div
+            <div ref={statsRef} className="grid grid-cols-3 gap-6">
+              {stats.map((stat) => (
+                <div
                   key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="text-center md:text-left"
                 >
                   <div className="font-display text-3xl md:text-4xl font-bold text-primary mb-1">
@@ -49,18 +126,12 @@ const AboutSection = () => {
                   <div className="font-body text-sm text-muted-foreground">
                     {stat.label}
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative"
-          >
+          <div ref={imageRef} className="relative">
             <div className="relative">
               <div className="absolute -inset-4 bg-primary/20 rounded-3xl blur-xl" />
               <img
@@ -73,7 +144,7 @@ const AboutSection = () => {
               <p className="font-display text-lg font-semibold mb-1">Ready to create?</p>
               <p className="font-body text-sm text-muted-foreground">Let's build something amazing together.</p>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
