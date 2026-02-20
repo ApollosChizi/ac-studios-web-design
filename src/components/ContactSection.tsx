@@ -113,7 +113,7 @@ const ContactSection = () => {
     setIsSubmitting(true);
 
     // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     toast.success("Message sent successfully! We'll be in touch soon.");
     setFormData({
       name: "",
@@ -124,7 +124,7 @@ const ContactSection = () => {
     setIsSubmitting(false);
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value
     }));
@@ -210,10 +210,10 @@ const ContactSection = () => {
                   <Phone className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-display font-semibold mb-1">Call Us</p>
-                  <a href="tel:+1234567890" className="font-body text-muted-foreground hover:text-primary transition-colors">
-                    +1 (234) 567-890
-                  </a>
+                  <p className="font-display font-semibold mb-1">Call Us/WhatsApp</p>
+                  <a href="tel:+1234567890" className="font-body text-muted-foreground hover:text-primary transition-colors">+(234) 9020114722
+
+                </a>
                 </div>
               </div>
 
@@ -223,9 +223,9 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <p className="font-display font-semibold mb-1">Location</p>
-                  <p className="font-body text-muted-foreground">
-                    Remote-first, worldwide
-                  </p>
+                  <p className="font-body text-muted-foreground">Nigeria
+
+                </p>
                 </div>
               </div>
             </div>
