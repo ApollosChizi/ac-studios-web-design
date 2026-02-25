@@ -5,10 +5,10 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const stats = [
-  { value: "50+", label: "Projects Delivered" },
-  { value: "5+", label: "Years Experience" },
-  { value: "100%", label: "Client Satisfaction" },
-];
+{ value: "50+", label: "Projects Delivered" },
+{ value: "5+", label: "Years Experience" },
+{ value: "100%", label: "Client Satisfaction" }];
+
 
 const AboutSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -31,8 +31,8 @@ const AboutSection = () => {
             trigger: contentRef.current,
             start: "top 80%",
             end: "top 40%",
-            toggleActions: "play none none reverse",
-          },
+            toggleActions: "play none none reverse"
+          }
         }
       );
 
@@ -50,8 +50,8 @@ const AboutSection = () => {
             trigger: imageRef.current,
             start: "top 85%",
             end: "top 45%",
-            toggleActions: "play none none reverse",
-          },
+            toggleActions: "play none none reverse"
+          }
         }
       );
 
@@ -71,8 +71,8 @@ const AboutSection = () => {
             scrollTrigger: {
               trigger: statsRef.current,
               start: "top 90%",
-              toggleActions: "play none none reverse",
-            },
+              toggleActions: "play none none reverse"
+            }
           }
         );
       }
@@ -85,8 +85,8 @@ const AboutSection = () => {
           trigger: sectionRef.current,
           start: "top bottom",
           end: "bottom top",
-          scrub: 1.5,
-        },
+          scrub: 1.5
+        }
       });
     }, sectionRef);
 
@@ -115,11 +115,11 @@ const AboutSection = () => {
             </p>
 
             <div ref={statsRef} className="grid grid-cols-3 gap-6">
-              {stats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="text-center md:text-left"
-                >
+              {stats.map((stat) =>
+              <div
+                key={stat.label}
+                className="text-center md:text-left">
+
                   <div className="font-display text-3xl md:text-4xl font-bold text-primary mb-1">
                     {stat.value}
                   </div>
@@ -127,7 +127,7 @@ const AboutSection = () => {
                     {stat.label}
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
@@ -137,18 +137,18 @@ const AboutSection = () => {
               <img
                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80"
                 alt="AC STUDIOS team collaboration"
-                className="relative w-full rounded-2xl object-cover aspect-square card-shadow"
-              />
+                className="relative w-full rounded-2xl object-cover aspect-square card-shadow" />
+
             </div>
             <div className="absolute -bottom-6 -left-6 px-6 py-4 bg-card border border-border rounded-xl card-shadow">
-              <p className="font-display text-lg font-semibold mb-1">Ready to create?</p>
+              <p className="font-display text-lg font-semibold mb-1">Are You Ready to create a website today?</p>
               <p className="font-body text-sm text-muted-foreground">Let's build something amazing together.</p>
             </div>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
 
 export default AboutSection;

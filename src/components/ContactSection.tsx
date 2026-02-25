@@ -183,9 +183,9 @@ const ContactSection = () => {
 
           <div ref={infoRef} className="space-y-8">
             <div>
-              <h3 className="font-display text-2xl font-semibold mb-6">
-                Let's talk about your next big idea
-              </h3>
+              <h3 className="font-display text-2xl font-semibold mb-6">Let's talk about your next big idea together.
+
+            </h3>
               <p className="font-body text-muted-foreground leading-relaxed mb-8">
                 Whether you're starting from scratch or looking to revamp your existing 
                 digital presence, we're here to help. Fill out the form and we'll get back 
@@ -210,8 +210,8 @@ const ContactSection = () => {
                   <Phone className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-display font-semibold mb-1">Call Us/WhatsApp</p>
-                  <a href="tel:+1234567890" className="font-body text-muted-foreground hover:text-primary transition-colors">+(234) 9020114722
+                  <p className="font-display font-semibold mb-1">Call Us</p>
+                  <a className="font-body text-muted-foreground hover:text-primary transition-colors" href="tel:+(234) 9020114722">+(234) 9020114722
 
                 </a>
                 </div>
